@@ -25,43 +25,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.4.0/socket.io.js"></script>
 
-    <link href="../public/static/mystyle.css" rel="stylesheet">
+    <link href="/static/mystyle.css" rel="stylesheet">
     <title>Do-Write</title>
     <script>
-        $(document).ready(function () {
-            get_posts()
+        
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const postId = urlParams.get("postId");
+
+        $(document).ready(()=>{
+            get_detail();
         })
-
-        function get_posts() {
-            $("#postsList tbody").empty()
-
+        function get_detail() {
             $.ajax({
                 type: "GET",
-                url: `/api/posts`,
+                url: `api/posts/${postId}`,
                 data: {},
                 success: function (response) {
-                    let posts = response["posts"]
-                    console.log(posts)
-                    for (let i = 0; i < posts.length; i++) {
-                        post_list(posts[i], i)
-                    }
+                    let postInfo = response['posts'];
+                    let temp_html = `
+                    <div class="field">
+                        <label class="label">작성자</label><hr>
+                        <p>${postInfo['postAuthor']}</p>
+                    <hr>
+                    </div>
+                    <div class="field">
+                        <label class="label">제목</label><hr>
+                        <p>${postInfo['postTitle']}<p>
+                    <hr>
+                    </div>
+                    <div class="field">
+                        <label class="label">글상세</label><hr>
+                        <p>${postInfo['postContent']}</p>
+                        <hr>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-link" onclick="location.href='/edit?postId=${postInfo["postId"]}'">수정하기</button>
+                        </div>
+                    </div>
+                    `
+                    console.log(postInfo);
+                    $("#posting-div").append(temp_html);
                 }
             })
-
-        }
-        
-        function post_list(post, i) {
-            
-            let title = post['postTitle'].substring(0, 20)
-
-            let htmlTemp = `<tr>
-                                <th scope="row">${i+1}</th>
-                                <td><a onclick="location.href='/detail?postId=${post["postId"]}'">${post['postAuthor']}</a></td>
-                                <td><a onclick="location.href='/detail?postId=${post["postId"]}'">${title}</a></td>
-                                <td><a onclick="location.href='/detail?postId=${post["postId"]}'">${post['postDate']}</a></td>
-                                
-                            </tr>`
-            $("#postsTable tbody").append(htmlTemp)
         }
     </script>
 </head>
@@ -70,41 +77,31 @@
     <!-- Just an image -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="">
+            <a class="navbar-item" href="/">
                 <h1>Do-Write</h1>
             </a>
-
-        </div>
-
-        <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="buttons" >
-                        <a class="button is-primary" href="/create">
-                            <strong>Add Post</strong>
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     </nav>
-    <div class="" id="">
-        <table class="table" id="postsTable" style="width: 80%; margin: auto;">
-            <thead id = "post-bar">
-                <tr>
-                    <th>번호</th>
-                    <th>작성자</th>
-                    <th>제목</th>
-                    <th>작성날짜</th>
-                </tr>
-            </thead>
-            <tbody>
+    <div id="posting-box" style="width: 500px; margin: auto;">
+        <div id="posting-div"></div>
+        <!-- <div class="field">
+            <label class="label">작성자</label>
+            <hr>
+        </div>
+        <div class="field">
+            <label class="label">제목</label>
+            <hr>
+        </div>
 
-            </tbody>
+        <div class="field">
+            <label class="label">글상세</label>
             
-        </table>
+        </div> -->
 
+
+        
     </div>
+
 </body>
 
 </html>

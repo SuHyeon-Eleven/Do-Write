@@ -13,8 +13,14 @@ router.get("/posts", async (req, res, next) => {
     }
 });
 
+router.get("/posts/:postId", async (req, res) => {
+    const { postId } = req.params;
+    posts = await Posts.findOne({ postId: postId });
+    res.json({ posts: posts });
+});
+
 router.post('/create', async (req, res) => {
-    const { postId,postDate, postAuthor, postTitle, postContent, postPassword } = req.body;
+    const { postId, postDate, postAuthor, postTitle, postContent, postPassword } = req.body;
     await Posts.create({ postId, postDate, postAuthor, postTitle, postContent, postPassword });
 
     res.send({ result: "success" });

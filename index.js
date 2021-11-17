@@ -20,6 +20,10 @@ app.get('/',(req,res)=>{
     res.render('index')
     // res.send("This is root page");
 })
+app.get('/detail',(req,res)=>{
+    let postId = req.query.name;
+    res.render('detail',{postId});
+})
 app.get('/create',(req,res)=>{
     // res.render('create')
     res.render('create')
