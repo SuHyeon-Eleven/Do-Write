@@ -26,8 +26,13 @@ app.get('/detail',(req,res)=>{
 })
 app.get('/create',(req,res)=>{
     // res.render('create')
-    res.render('create')
+    res.render('create');
 })
+app.get('/edit',(req, res)=>{
+    let postId = req.query.name;
+    res.render('edit',{postId});
+})
+
 app.listen(port, ()=>{
     console.log(`listening at http://localhost:${port}`);
 })

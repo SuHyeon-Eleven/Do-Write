@@ -26,4 +26,27 @@ router.post('/create', async (req, res) => {
     res.send({ result: "success" });
 });
 
+router.patch("/posts/:postId", async (req, res) => {
+    console.log(req.params)
+    const { postId } = req.params;
+    const { postAuthor,postTitle, postContent } = req.body;
+    const exist_post = await Posts.find({ postId });
+    console.log(exist_post)
+    if (exist_post.length > 0) {
+        await Posts.updateOne({ postId }, { $set: { postAuthor, postTitle, postContent } })
+    }
+    res.send({ result: "success" });
+})
+
+
+router.delete("/posts/:postId", async (req, res) => {
+    const { postId } = req.params
+
+    const deletePost = await Posts.find({ postId });
+    if (deletePost.length > 0) {
+        await Posts.deleteOne({ postId });
+    }
+    res.send({ result: "success" });
+})
+
 module.exports = router;

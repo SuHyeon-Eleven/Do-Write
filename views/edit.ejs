@@ -3,8 +3,8 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.png" type="image/x-icon">
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <!-- Bootstrap CSS -->
@@ -28,10 +28,116 @@
     <link href="/static/mystyle.css" rel="stylesheet">
     <title>Do-Write</title>
     <script>
-        function create_post(){
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const postId = urlParams.get("postId");
+
+        $(document).ready(() => {
+            get_detail()
+        })
+
+        function get_detail() {
+            $.ajax({
+                type: "GET",
+                url: `/api/posts/${postId}`,
+                data: {},
+                success: function (response) {
+                    let postInfo = response["posts"];
+                    let checkPassword = postInfo['postPassword'];
+                    let temp_html = `
+                    <div class="field">
+                        <label class="label">작성자</label>
+                        <div class="control">
+                        <input id="postAuthor" class="input" type="text" value = "${postInfo['postAuthor']}" placeholder="닉네임을 입력하세요.">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">제목</label>
+                        <div class="control">
+                        <input id="postTitle" class="input" type="text" value="${postInfo['postTitle']}" placeholder="제목을 입력하세요.">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">내용</label>
+                        <div class="control">
+                        <textarea id="postContent" class="textarea"  placeholder="내용을 입력하세요.">"${postInfo['postContent']}"</textarea>
+                        </div>
+                    </div>
+        
+                    <div class="field">
+                        <label class="label">비밀번호</label>
+                        <p class="control has-icons-left">
+                        <input id="postPassword" class="input" type="password" placeholder="비밀번호를 입력하세요.">
+                        <span class="icon is-small is-left">
+                        <i class="fas fa-lock"></i>
+                        </span>
+                        </p>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                        <button onclick="updatePost(${checkPassword})" class="button is-link" onclick="create_post()">수정하기</button>
+                        </div>
+                        <div class="control" >
+                        <a href="/">
+                        <button onclick="deletePost(${checkPassword})" class="button is-link is-light">삭제하기</button>
+                        </a>
+                        </div>
+                    </div>
+                    `
+                    $("#posting-box").append(temp_html);
+
+                }
+            })
+        }
+        function updatePost(checkPassword){
+            const postPassword = parseInt($('#postPassword').val());
+            const postTitle = $('#postTitle').val();
+            const postContent = $('#postContent').val();
+            const postAuthor = $('#postAuthor').val();
+            if (postPassword != checkPassword) {
+                alert("비밀번호가 다릅니다.");
+            } else {
+                $.ajax({
+                    type: "PATCH",
+                    url: `/api/posts/${postId}`,
+                    data: {
+                        "postAuthor":postAuthor,
+                        "postTitle":postTitle,
+                        "postContent":postContent
+                    },
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert('게시글이 성공적으로 삭제되었습니다.');
+                            location.href = "/";
+                        }
+                    }
+                });
+            }
+        }
+        function deletePost(checkPassword) {
+            const postPassword = parseInt($('#postPassword').val());
+
+            if (postPassword != checkPassword) {
+                alert("비밀번호가 다릅니다.");
+            } else {
+                $.ajax({
+                    type: "DELETE",
+                    url: `/api/posts/${postId}`,
+                    data: {},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert('게시글이 성공적으로 삭제되었습니다.');
+                            location.href = "/";
+                        }
+                    }
+                });
+            }
+        }
+        function create_post() {
             // const postDate = Date.now() => 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 Number 형으로 반환
             const postId = Date.now();
-            const postDate =  new Date(+new Date() + 3240 * 10000).toISOString().replace("T", " ").replace(/\..*/, '');
+            const postDate = new Date(+new Date() + 3240 * 10000).toISOString().replace("T", " ").replace(/\..*/, '');
             const postAuthor = $('#postAuthor').val();
             const postTitle = $('#postTitle').val();
             const postContent = $('#postContent').val();
@@ -40,16 +146,16 @@
             $.ajax({
                 type: "POST",
                 url: '/api/create',
-                data:{
-                    "postId":postId,
-                    "postDate":postDate,
-                    "postAuthor":postAuthor,
-                    "postTitle":postTitle,
-                    "postContent":postContent,
-                    "postPassword":postPassword
+                data: {
+                    "postId": postId,
+                    "postDate": postDate,
+                    "postAuthor": postAuthor,
+                    "postTitle": postTitle,
+                    "postContent": postContent,
+                    "postPassword": postPassword
                 },
-                success: function(response){
-                    if(response["result"]=="success"){
+                success: function (response) {
+                    if (response["result"] == "success") {
                         alert("게시글이 정상적으로 저장되었습니다");
                         location.href = "/";
 
@@ -70,7 +176,7 @@
         </div>
     </nav>
     <div id="posting-box" style="width: 500px; margin: auto;">
-        <div class="field">
+        <!-- <div class="field">
             <label class="label">작성자</label>
             <div class="control">
                 <input id="postAuthor" class="input" type="text" placeholder="닉네임을 입력하세요.">
@@ -108,7 +214,7 @@
                     <button class="button is-link is-light">취소</button>
                 </a>
             </div>
-        </div>
+        </div> -->
     </div>
 
 </body>
