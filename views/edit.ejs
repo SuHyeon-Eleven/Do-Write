@@ -61,7 +61,7 @@
                     <div class="field">
                         <label class="label">내용</label>
                         <div class="control">
-                        <textarea id="postContent" class="textarea"  placeholder="내용을 입력하세요.">"${postInfo['postContent']}"</textarea>
+                        <textarea id="postContent" class="textarea"  placeholder="내용을 입력하세요.">${postInfo['postContent']}</textarea>
                         </div>
                     </div>
         
@@ -108,7 +108,7 @@
                     },
                     success: function (response) {
                         if (response["result"] == "success") {
-                            alert('게시글이 성공적으로 삭제되었습니다.');
+                            alert('게시글이 성공적으로 수정되었습니다.');
                             location.href = "/";
                         }
                     }
