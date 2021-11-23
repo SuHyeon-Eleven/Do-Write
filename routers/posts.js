@@ -3,7 +3,7 @@ const Posts = require("../schemas/posts");  //post 모델 가져오기
 
 const router = express.Router();
 
-router.get("/posts", async (req, res, next) => {
+router.get("/posts", async ( req, res, next) => {
     try {
         const posts = await Posts.find({}).sort("-postId");
         res.json({ posts: posts });

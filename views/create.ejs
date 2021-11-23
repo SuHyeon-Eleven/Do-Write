@@ -36,26 +36,40 @@
             const postTitle = $('#postTitle').val();
             const postContent = $('#postContent').val();
             const postPassword = $('#postPassword').val();
+            
+            if(postTitle == ""){
+                alert("제목을 입력해주세요!");
+                return;
+            }else if(postAuthor == ""){
+                alert("작성자를 입력해주세요!");
+                return;
+            }else if(postContent == ""){
+                alert("글 내용을 입력해주세요!");
+                return;
+            }else if(postPassword == ""){
+                alert("패스워드를 입력해주세요!!!");
+                return;
+            }else{
+                $.ajax({
+                    type: "POST",
+                    url: '/api/create',
+                    data:{
+                        "postId":postId,
+                        "postDate":postDate,
+                        "postAuthor":postAuthor,
+                        "postTitle":postTitle,
+                        "postContent":postContent,
+                        "postPassword":postPassword
+                    },
+                    success: function(response){
+                        if(response["result"]=="success"){
+                            alert("게시글이 정상적으로 저장되었습니다");
+                            location.href = "/";
 
-            $.ajax({
-                type: "POST",
-                url: '/api/create',
-                data:{
-                    "postId":postId,
-                    "postDate":postDate,
-                    "postAuthor":postAuthor,
-                    "postTitle":postTitle,
-                    "postContent":postContent,
-                    "postPassword":postPassword
-                },
-                success: function(response){
-                    if(response["result"]=="success"){
-                        alert("게시글이 정상적으로 저장되었습니다");
-                        location.href = "/";
-
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     </script>
 </head>
